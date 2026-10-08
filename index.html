@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Любимая, я с тобой 💛</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(135deg, #ffe4e9 0%, #fff5e1 50%, #e8f4ff 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-x: hidden;
+    color: #4a3f4a;
+  }
+  .card {
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 32px;
+    padding: 40px 30px;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(255, 150, 180, 0.25);
+    animation: floatIn 1s ease-out;
+  }
+  @keyframes floatIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  h1 {
+    font-size: 1.8rem;
+    margin-bottom: 12px;
+    background: linear-gradient(90deg, #ff6b9d, #ffa06b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: heartbeat 2.5s ease-in-out infinite;
+  }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+  }
+  .subtitle {
+    font-size: 1rem;
+    color: #8a7a8a;
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+  .hug-btn {
+    background: linear-gradient(135deg, #ff8fb1, #ffb088);
+    color: white;
+    border: none;
+    padding: 18px 40px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(255, 143, 177, 0.4);
+    transition: all 0.3s;
+    font-weight: 600;
+  }
+  .hug-btn:hover { transform: translateY(-3px) scale(1.03); }
+  .hug-btn:active { transform: scale(0.97); }
+
+  .phrase-box {
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 20px;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: #6a5a6a;
+    transition: opacity 0.4s;
+  }
+
+  .hearts {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: -1;
+  }
+  .heart {
+    position: absolute;
+    font-size: 24px;
+    animation: rise linear infinite;
+    opacity: 0.5;
+  }
+  @keyframes rise {
+    from { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.6; }
+    to { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+
+  .hug-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 200, 220, 0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 100;
+    font-size: 5rem;
+    animation: pulse 0.6s ease;
+  }
+  .hug-overlay.show { display: flex; }
+  .hug-overlay p {
+    font-size: 1.2rem;
+    color: #6a4a5a;
+    margin-top: 20px;
+    font-weight: 600;
+  }
+  @keyframes pulse {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .btn-row { display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+  .mini-btn {
+    background: rgba(255,255,255,0.9);
+    border: 2px solid #ffc4d6;
+    color: #ff6b9d;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  .mini-btn:hover { background: #ffc4d6; color: white; }
+
+  .music-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    border: 2px solid #ffc4d6;
+    cursor: pointer;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    transition: all 0.3s;
+    box-shadow: 0 8px 20px rgba(255, 143, 177, 0.3);
+  }
+  .music-btn:hover { transform: scale(1.1); }
+  .music-btn.playing {
+    background: linear-gradient(135deg, #ff8fb1, #ffb088);
+    color: white;
+    border-color: transparent;
+    animation: beat 1.2s ease-in-out infinite;
+  }
+  @keyframes beat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+  .music-hint {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: rgba(255,255,255,0.95);
+    color: #ff6b9d;
+    padding: 8px 14px;
+    border-radius: 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    box-shadow: 0 6px 16px rgba(255, 143, 177, 0.25);
+    animation: fadeHint 0.6s ease;
+    z-index: 49;
+  }
+  @keyframes fadeHint {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .modal-bg {
+    position: fixed;
+    inset: 0;
+    background: rgba(90, 60, 80, 0.35);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+  }
+  .modal-bg.show { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal {
+    background: rgba(255,255,255,0.97);
+    border-radius: 28px;
+    padding: 30px 26px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 25px 60px rgba(255, 143, 177, 0.35);
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .modal h2 {
+    font-size: 1.3rem;
+    color: #ff6b9d;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .modal p {
+    font-size: 0.9rem;
+    color: #9a8a9a;
+    text-align: center;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  .modal textarea {
+    width: 100%;
+    min-height: 120px;
+    border: 2px solid #ffd4e1;
+    border-radius: 18px;
+    padding: 14px 16px;
+    font-size: 1rem;
+    font-family: inherit;
+    color: #4a3f4a;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.3s;
+    background: #fff8fb;
+    line-height: 1.5;
+  }
+  .modal textarea:focus { border-color: #ff8fb1; }
+  .modal textarea::placeholder { color: #c9a9bd; }
+
+  .quick-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    margin-bottom: 20px;
+  }
+  .quick-tag {
+    background: #fff0f5;
+    border: 1.5px solid #ffd4e1;
+    color: #ff6b9d;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .quick-tag:hover { background: #ff8fb1; color: white; border-color: transparent; }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+  }
+  .send-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #ff8fb1, #ffb088);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(255, 143, 177, 0.4);
+    transition: all 0.3s;
+  }
+  .send-btn:hover { transform: translateY(-2px); }
+  .send-btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
+  .cancel-btn {
+    background: rgba(255,255,255,0.9);
+    border: 2px solid #ffd4e1;
+    color: #b08aa0;
+    padding: 15px 22px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .cancel-btn:hover { background: #fff0f5; }
+
+  .success-msg {
+    text-align: center;
+    padding: 20px 0;
+    color: #ff6b9d;
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: none;
+  }
+  .success-msg.show { display: block; animation: popIn 0.4s ease; }
+
+  #ytPlayer {
+    position: fixed;
+    bottom: -1000px;
+    left: -1000px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<button class="music-btn" id="musicBtn" onclick="toggleMusic()" title="Включить музыку">🎵</button>
+<div class="music-hint" id="hint">Включи музыку 🎶</div>
+
+<div class="hearts" id="hearts"></div>
+
+<div class="card">
+  <h1>Любимая, я с тобой 💛</h1>
+  <p class="subtitle">
+    Знаю, что тебе сейчас не очень.<br>
+    Но я рядом. Через километры, но рядом.
+  </p>
+
+  <button class="hug-btn" onclick="hug()">Обнять меня 🤗</button>
+
+  <div class="phrase-box" id="phrase">Нажми на кнопку — я скажу что-то важное</div>
+
+  <div class="btn-row">
+    <button class="mini-btn" onclick="newPhrase()">Ещё тёплое слово</button>
+    <button class="mini-btn" onclick="openModal()">Написать мне 💬</button>
+    <button class="mini-btn" onclick="notifyHim()">Я рядом 💌</button>
+  </div>
+</div>
+
+<div class="hug-overlay" id="overlay">
+  <div>🤗</div>
+  <p>Обнимаю тебя крепко-крепко</p>
+</div>
+
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this) closeModal()">
+  <div class="modal">
+    <div id="modalContent">
+      <h2>Напиши мне что угодно 💌</h2>
+      <p>Всё, что на душе — плохое, хорошее, или просто «скучно».<br>Я сразу получу.</p>
+
+      <textarea id="messageInput" placeholder="Можно пожаловаться, поныть, пошутить или просто написать «привет»..." maxlength="1000"></textarea>
+
+      <div class="quick-tags">
+        <span class="quick-tag" onclick="addTag('Скучаю 🥺')">Скучаю 🥺</span>
+        <span class="quick-tag" onclick="addTag('Мне плохо 😔')">Мне плохо 😔</span>
+        <span class="quick-tag" onclick="addTag('Ты лучший 💛')">Ты лучший 💛</span>
+        <span class="quick-tag" onclick="addTag('Обними меня 🤗')">Обними меня 🤗</span>
+        <span class="quick-tag" onclick="addTag('Хочу чай 🍵')">Хочу чай 🍵</span>
+      </div>
+
+      <div class="modal-actions">
+        <button class="cancel-btn" onclick="closeModal()">Отмена</button>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">Отправить 💛</button>
+      </div>
+    </div>
+    <div class="success-msg" id="successMsg">Уже у меня 💛<br><span style="font-size:0.85rem;color:#b08aa0;font-weight:500">Отвечу скорее, чем ты моргнёшь</span></div>
+  </div>
+</div>
+
+<!-- Скрытый YouTube-плеер для Nightcore-музыки -->
+<div id="ytPlayer"></div>
+
+<script>
+/* ============ НАСТРОЙКИ ============ */
+const BOT_TOKEN = '8854988297:AAEGwLem3WqnnPRlZXjb7yjCSC4T_aDIBMU';
+const CHAT_ID = '6790464689';
+
+// ⚠️ ВАЖНО: замени на ID любого Nightcore-видео, которое тебе нравится.
+// Например: если ссылка https://www.youtube.com/watch?v=ABC123 — то ID = ABC123
+const YOUTUBE_VIDEO_ID = 'NbMbkmYNGHw'; // сейчас это lofi hip hop — просто для теста
+
+/* ============ МУЗЫКА ЧЕРЕЗ YOUTUBE ============ */
+let ytPlayer = null;
+let ytReady = false;
+let musicWanted = false;
+
+// Подгружаем YouTube IFrame API
+(function loadYT() {
+  const tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(tag);
+})();
+
+function onYouTubeIframeAPIReady() {
+  ytPlayer = new YT.Player('ytPlayer', {
+    height: '1',
+    width: '1',
+    videoId: YOUTUBE_VIDEO_ID,
+    playerVars: {
+      autoplay: 0,
+      controls: 0,
+      loop: 1,
+      playlist: YOUTUBE_VIDEO_ID,
+      modestbranding: 1,
+      rel: 0,
+      playsinline: 1
+    },
+    events: {
+      onReady: () => {
+        ytReady = true;
+        ytPlayer.setVolume(45);
+        if (musicWanted) {
+          ytPlayer.playVideo();
+        }
+      },
+      onStateChange: (e) => {
+        // Автоповтор, если видео остановилось
+        if (e.data === 0 && musicWanted) {
+          ytPlayer.seekTo(0);
+          ytPlayer.playVideo();
+        }
+      }
+    }
+  });
+}
+
+function toggleMusic() {
+  const btn = document.getElementById('musicBtn');
+  const hint = document.getElementById('hint');
+  if (hint) hint.remove();
+
+  if (!musicWanted) {
+    musicWanted = true;
+    btn.classList.add('playing');
+    btn.textContent = '🎶';
+    if (ytReady && ytPlayer && ytPlayer.playVideo) {
+      ytPlayer.playVideo();
+    }
+  } else {
+    musicWanted = false;
+    btn.classList.remove('playing');
+    btn.textContent = '🎵';
+    if (ytReady && ytPlayer && ytPlayer.pauseVideo) {
+      ytPlayer.pauseVideo();
+    }
+  }
+}
+
+/* ============ ТЁПЛЫЕ ФРАЗЫ ============ */
+const phrases = [
+  "Ты справишься. Ты сильная, даже когда кажется, что нет.",
+  "Я думаю о тебе прямо сейчас.",
+  "Твоё плохое самочувствие — временно. А моя забота — нет.",
+  "Хотел бы сейчас укрыть тебя одеялом и принести чай.",
+  "Ты самое важное, что случилось со мной.",
+  "Можно ничего не делать. Просто отдохни. Я подожду.",
+  "Обнимаю тебя на расстоянии так сильно, как могу.",
+  "Ты не одна. Даже через километры.",
+  "Скорее поправляйся, солнышко.",
+  "Я горжусь тем, как ты держишься."
+];
+
+function newPhrase() {
+  const el = document.getElementById('phrase');
+  el.style.opacity = 0;
+  setTimeout(() => {
+    el.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+    el.style.opacity = 1;
+  }, 300);
+}
+
+function hug() {
+  const overlay = document.getElementById('overlay');
+  overlay.classList.add('show');
+  if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+  for (let i = 0; i < 20; i++) setTimeout(spawnHeart, i * 60);
+  setTimeout(() => overlay.classList.remove('show'), 2500);
+  newPhrase();
+}
+
+function spawnHeart() {
+  const h = document.createElement('div');
+  h.className = 'heart';
+  h.textContent = ['💛','💖','💕','🌸','✨'][Math.floor(Math.random()*5)];
+  h.style.left = Math.random() * 100 + 'vw';
+  h.style.animationDuration = (4 + Math.random() * 3) + 's';
+  h.style.fontSize = (16 + Math.random() * 20) + 'px';
+  document.getElementById('hearts').appendChild(h);
+  setTimeout(() => h.remove(), 7000);
+}
+setInterval(spawnHeart, 800);
+
+/* ============ МОДАЛЬНОЕ ОКНО ============ */
+function openModal() {
+  document.getElementById('modalBg').classList.add('show');
+  document.getElementById('modalContent').style.display = 'block';
+  document.getElementById('successMsg').classList.remove('show');
+  document.getElementById('messageInput').value = '';
+  document.getElementById('messageInput').focus();
+}
+
+function closeModal() {
+  document.getElementById('modalBg').classList.remove('show');
+}
+
+function addTag(text) {
+  const ta = document.getElementById('messageInput');
+  ta.value = ta.value ? ta.value + ' ' + text : text;
+  ta.focus();
+}
+
+async function sendMessage() {
+  const text = document.getElementById('messageInput').value.trim();
+  if (!text) {
+    document.getElementById('messageInput').focus();
+    return;
+  }
+
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  btn.textContent = 'Отправляю...';
+
+  const message = `💌 Сообщение с сайта:\n\n${text}`;
+
+  try {
+    if (BOT_TOKEN !== 'YOUR_BOT_TOKEN' && CHAT_ID !== 'YOUR_CHAT_ID') {
+      const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: CHAT_ID, text: message })
+      });
+      if (!res.ok) throw new Error('send failed');
+    } else {
+      console.log('Telegram не настроен. Сообщение:', message);
+    }
+
+    document.getElementById('modalContent').style.display = 'none';
+    document.getElementById('successMsg').classList.add('show');
+    for (let i = 0; i < 15; i++) setTimeout(spawnHeart, i * 60);
+    setTimeout(closeModal, 2500);
+  } catch (e) {
+    alert('Не получилось отправить 😔 Попробуй ещё раз');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Отправить 💛';
+  }
+}
+
+/* ============ «Я РЯДОМ» ============ */
+function notifyHim() {
+  if (BOT_TOKEN === 'YOUR_BOT_TOKEN' || CHAT_ID === 'YOUR_CHAT_ID') {
+    alert('Я почувствовал 💛');
+    return;
+  }
+  const msg = encodeURIComponent('💌 Она нажала «Я рядом» на сайте!');
+  fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${msg}`)
+    .catch(() => {});
+  alert('Я почувствовал 💛');
+}
+</script>
+</body>
+</html>
